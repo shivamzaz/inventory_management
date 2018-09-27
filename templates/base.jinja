@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+
+    <meta charset="utf-8">
+   
+
+    <meta name="robots" content="noindex, nofollow">
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="vlEbyB5ZPRWGZgpLTN5sEkz9Hk2BEdAx_Rm8AvezZpU" />
+    <link rel="shortcut icon" href="{{ static('images/favicon.ico') }}">
+    
+    <link rel="canonical" href="{{ request.build_absolute_uri(request.path) }}{% for key,value in request.GET.iteritems() %}{% if key == 'page' %}?page={{value }}{% endif %}{% endfor %}"/>
+
+    
+    <meta http-equiv="content-language" content="en-us">
+
+    {% block meta %}
+      <title>{% block title %}{% if title %}{{ title }}{% else %}Inventory{% endif %}{% endblock %}</title>
+      <meta name="description" content="Inventory."/>
+      <meta name="keywords" content="Inventory"/>
+    {% endblock %}
+
+    </head>
+
+    <body class="{% if page %}{{ page }}{% else %}home{% endif %}">
+      {% block content %}{% endblock %}
+
+    <input type="hidden" id="current-page" value="{% block currentpage %}{% endblock %}"/>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/4.3/js/bootstrap.min.js"></script>
+    <link href="{{ static('css/auth.css') }}" rel="stylesheet" />
+    <script src="{{ static('js/jquery-1.11.1.min.js') }}"></script>  
+    {% block beforescripts %}    
+    {% endblock %}
+  </body>
+</html>

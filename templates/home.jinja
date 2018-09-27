@@ -1,0 +1,16 @@
+{% extends "base.jinja" %}
+{% block content %}
+<div>
+    <img src="{{ static('images/tenor.gif') }}" style="margin-left: 453px;" alt="Smiley face" height="42" width="520">
+</div>
+<script src="{{ static('js/jquery-1.11.1.min.js') }}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+<script>
+     var token = JSON.parse(localStorage.getItem('Token'));
+     if(token==null){
+           window.location.href = "{{url('inventory.signin')}}";
+     }else{
+        window.location.href = "{{url('inventory.products')}}" + "?token=" + localStorage.getItem('Token').replace('"', '').replace('"', '');
+     }
+</script>
+{%endblock%}

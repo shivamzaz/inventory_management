@@ -1,0 +1,108 @@
+{% extends "base.jinja" %}
+{% block content %}
+  {% include 'header.jinja' %}  
+  <div class="container" style="width:80%;">
+  <div class="row">
+    <div class="span5" style="width:1150px;">
+            <table class="table table-striped table-condensed">
+                  <thead>
+                  <tr>
+                      <th>Name</th>
+                      <th>Vendor</th>
+                      <th>MRP</th>
+                      <th>Quantity</th>
+                      <th>Batch Number</th>
+                      <th>Batch Date</th>                                          
+                      <th>Status</th>                                          
+                      <th>Delete</th>                                          
+                  </tr>
+              </thead>   
+              <tbody>
+                {% for item in response %}
+                    <tr>
+                      <a href="#">
+                        <td class="product_id" style="color: hotpink;cursor: pointer;" data-id="{{item['id']}}">{{item['name']}}</td>
+                      </a>
+                      <td>{{item['vendor']}}</td>
+                      <td>{{item['mrp']}}</td>
+                      <td>{{item['quantity']}}</td>
+                      <td>{{item['batch_date']}}</td>
+                      <td>{{item['batch_num']}}</td>                                          
+                      <td>
+                        {% if item['status']==1%}
+                              <span class="label label-success">Approved</span>
+                        {%else%}
+                              <span class="label label-important">Pending</span>                                   
+                        {%endif%}
+                      </td>
+                      <td>
+                          <span class="label label-warning prdt">Delete</span>                                                      
+                      </td>                                          
+                    </tr>
+                {% endfor %}                              
+              </tbody>
+            </table>
+            </div>
+  </div>
+</div>
+<script src="{{ static('js/jquery-1.11.1.min.js') }}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+<script>
+    $('.log-out').on('click', function(){
+      var token = JSON.parse(localStorage.getItem('Token'));
+        $.ajax({
+          url: "{{url('user.token.remove')}}",
+          type: 'GET',
+          data: {'token': token},
+        })
+        .done(function(res) {
+          localStorage.removeItem('Token');
+          localStorage.removeItem('role');
+          window.location.href = "{{url('inventory.signin')}}";
+        })
+        .fail(function() {
+          console.log("error");
+        })
+        .always(function() {
+          localStorage.removeItem('Token');
+          localStorage.removeItem('role');
+          window.location.href = "{{url('inventory.signin')}}";
+        });        
+    });
+
+    $('.prdt').on('click', function(){
+      var token = 'Token ' + JSON.parse(localStorage.getItem('Token'))
+      var product_id = parseInt($('.product_id').data('id'));
+      alert('are you sure ?')
+        $.ajax({
+          url: ("{{url('api.inventory_view', version = 1, id=-2)}}").replace('-2',product_id),
+          type: 'DELETE',
+          beforeSend: function(request) {
+          request.setRequestHeader("Authorization", token);
+          },
+          data: {'token': token},
+        })
+        .done(function(res) {
+          window.location.href = "{{url('inventory.products')}}" + "?token=" + JSON.parse(localStorage.getItem('Token'));
+        })     
+    });
+    $('.product_id').on('click', function(){
+      var element = $(this);
+      var id = element.data('id');
+      var url = ("{{url('inventory.products.edit', id=-1)}}" + "?token=" + JSON.parse(localStorage.getItem('Token'))).replace("-1", id);
+      window.location.href = url;
+    });
+    $('.pdt_list').on('click', function(){
+          window.location.href = "{{url('inventory.products')}}" + "?token=" + JSON.parse(localStorage.getItem('Token'));
+    });
+    jQuery(document).ready(function($) {
+      var role = JSON.parse(localStorage.getItem('role'));
+      if(role == "0"){
+        $('.name').text('*Assistant Panel');
+      }
+      else{
+        $('.name').text('Manager Panel');
+      }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends "base.jinja" %}
+{% block extracss %}
+   <link href="{{ static('css/auth.css') }}" rel="stylesheet" />
+{% endblock %}
+{% block content %}
+	{% include 'header.jinja' %}
+	<div class="container">
+	<div class="row">
+		<div class="span">
+       <form class="form edit" action="" method="POST">
+          {%csrf_token%}
+            <table class="table table-striped">
+                  <thead>
+                  <tr>
+                      <th>Name</th>
+                      <th>Vendor</th>
+                      <th>MRP</th>
+                      <th>Quantity</th>
+                      <th>Batch Date</th>                                          
+                      <th>Batch Number</th>
+                      <th class="dropdown">Status</th>                                          
+                  </tr>
+              </thead> 
+              <tbody>
+                  {%for item in response%}
+              	    <tr>
+                      <div class="product_id" data-id="{{item['id']}}"></div>
+                      <input type="hidden" value="{{item['id']}}" name="id" />
+                       <td><input type="text" class="input-box" data-validation="length" data-validation-length="min4" name="name" value={{item['name']}}></td>
+                      <td><input type="text" class="input-box" data-validation="length" data-validation-length="min4" name="vendor" value={{item['vendor']}}></td>
+                      <td><input type="number" class="input-box" data-validation="length" data-validation-length="min1" name="mrp" value={{item['mrp']}}></td>
+                      <td><input type="number" class="input-box" data-validation="length" data-validation-length="min1" name="quantity"value={{item['quantity']}}></td>
+                      <td><input type="date" data-date="" data-date-format="DD MMMM YYYY" class="-box" value={{item['batch_date']}} name="batch_date"></td>
+                      <td><input type="text" class="input-box" data-validation="length" data-validation-length="min1" value={{item['batch_num']}} name="batch_num"></td>                                          
+                      <td>                   
+                        <div class="dropdown">
+                           <label for="password" class="text-white">Status</label><br>
+                            <select name="status" style="width: 96px;margin-top: -32px;">
+                              {%if item['status']==0 %}
+                                <option value="0">PENDING</option>
+                                <option value="1">Approved</option>
+                              {%else%}
+                                <option value="1">Approved</option>
+                                <option value="0">PENDING</option>
+                              {%endif%}
+                            </select>
+                        </div>
+                    </td>                                     
+                  	</tr>
+                  {%endfor%}
+              </tbody>
+            </table>
+            <input type="submit" name="submit" class="btn btn-info btn-md" style="margin-left: 400px;" value="submit">
+       </form>  
+    </div>
+	</div>
+</div>
+<script src="{{ static('js/jquery-1.11.1.min.js') }}"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+<script>
+      $('.log-out').on('click', function(){
+      var token = JSON.parse(localStorage.getItem('Token'));
+        $.ajax({
+          url: "{{url('user.token.remove')}}",
+          type: 'GET',
+          data: {'token': token},
+        })
+        .done(function(res) {
+          console.log("success");
+          localStorage.removeItem('Token');
+          localStorage.removeItem('role');
+          window.location.href = "{{url('inventory.signin')}}";
+        })
+        .fail(function() {
+          console.log("error");
+        })
+        .always(function() {
+          localStorage.removeItem('Token');
+          localStorage.removeItem('role');
+          window.location.href = "{{url('inventory.signin')}}";
+          console.log("complete");
+        });        
+    });
+
+</script>
+<script>
+          $.validate({
+            lang: 'en'
+          });
+
+          $(".edit").submit(function(event) {
+                // Stop form from submitting normally
+                var frm = $('.edit');
+                var product_id = parseInt($('.product_id').data('id'));
+                var token = 'Token ' + JSON.parse(localStorage.getItem('Token'));
+                var role =  JSON.parse(localStorage.getItem('role'));
+                event.preventDefault();
+                var data = frm.serialize();
+                if(role == '0'){
+                  data = data.replace('status=1', 'status=0')
+                }
+                console.log(data);
+                $.ajax({
+                    url: ("{{url('api.inventory_view', version = 1, id=-2)}}").replace('-2',product_id),
+                    type: 'POST',
+                    beforeSend: function(request) {
+                    request.setRequestHeader("Authorization", token);
+                    },
+                    data: data,
+
+                })
+                .done(function(res) {
+                    console.log("{{url('inventory.products')}}" + "?token=" + localStorage.getItem('Token'));
+                    window.location.href = "{{url('inventory.products')}}" + "?token=" + JSON.parse(localStorage.getItem('Token'));
+                })
+                .fail(function(res) {
+                    console.log(token);
+                    res = JSON.parse(res.responseText);
+                    console.log(res.detail);
+                    $(".error").html('<i style="color:red;">*'+res.detail+'</i>');
+                })
+                .always(function(res) {
+                    console.log("complete");
+                });
+            });
+</script>
+<script>
+  jQuery(document).ready(function($) {
+    var role = JSON.parse(localStorage.getItem('role'));
+    if(role == "0"){
+      $('.dropdown').hide();
+    }
+  });
+    $('.pdt_list').on('click', function(){
+          window.location.href = "{{url('inventory.products')}}" + "?token=" + JSON.parse(localStorage.getItem('Token'));
+    });
+</script>
+{% endblock %}
