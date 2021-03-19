@@ -53,7 +53,7 @@ django-user-agents==0.3.2
 django-versatileimagefield==1.8.1
 django-waffle==0.12.0
 django-webpush==0.2.5
-djangorestframework==3.8.2
+djangorestframework==3.11.2
 docutils==0.14
 drf-extensions==0.3.1
 elasticsearch==5.4.0
