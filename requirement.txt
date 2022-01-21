@@ -80,7 +80,7 @@ idna==2.6
 imageio==2.3.0
 incremental==16.10.1
 ipaddress==1.0.18
-ipython==5.0.0
+ipython==7.16.3
 ipython-genutils==0.2.0
 iso8601==0.1.12
 itsdangerous==0.24
