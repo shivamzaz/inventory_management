@@ -1,7 +1,7 @@
 amqp==1.4.9
 anyjson==0.3.3
 appnope==0.1.0
-arrow==0.12.1
+arrow==0.15.1
 asgi-redis==1.4.3
 asgiref==1.1.2
 asn1crypto==0.22.0
